@@ -1,11 +1,10 @@
 import {
-  Button,
   createStyles,
   Grid,
   makeStyles,
-  Paper,
-  TextField,
   Theme,
+  useMediaQuery,
+  useTheme,
 } from '@material-ui/core';
 import {
   AuthenticationDetails,
@@ -13,18 +12,15 @@ import {
   CognitoUserPool,
   CognitoUserSession,
 } from 'amazon-cognito-identity-js';
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import SignInLargePaper from '../molecules/SignInLargePaper';
+import SignInSmallPaper from '../molecules/SignInSmallPaper';
 import PageTemplate from '../templates/PageTemplate';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    paper: {
-      height: '300px',
-      width: '300px',
-    },
-    fieldItem: {
-      textAlign: 'center',
+    root: {
+      height: '100%',
     },
   })
 );
@@ -34,13 +30,14 @@ export default function SignInPage() {
   const [user, setUser] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleOnUserChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUser(event.target.value);
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
+  const handleOnChangeUsername = (username: string) => {
+    setUser(username);
   };
-  const handleOnPasswordChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setPassword(event.target.value);
+  const handleOnChangePassword = (password: string) => {
+    setPassword(password);
   };
 
   const handleOnSignInClick = () => {
@@ -79,41 +76,31 @@ export default function SignInPage() {
 
   return (
     <PageTemplate>
-      <Grid container direction="column" justify="center" alignItems="center">
+      <Grid
+        container
+        direction="column"
+        justify="center"
+        alignItems="center"
+        className={classes.root}
+      >
         <Grid item>
-          <Paper className={classes.paper}>
-            <form>
-              <Grid container spacing={2}>
-                <Grid item xs={12} className={classes.fieldItem}>
-                  <TextField
-                    label="user"
-                    value={user}
-                    onChange={handleOnUserChange}
-                  />
-                </Grid>
-                <Grid item xs={12} className={classes.fieldItem}>
-                  <TextField
-                    label="password"
-                    type="password"
-                    value={password}
-                    onChange={handleOnPasswordChange}
-                  />
-                </Grid>
-                <Grid item xs={12} className={classes.fieldItem}>
-                  <Grid container>
-                    <Grid item xs={6}>
-                      <Button onClick={handleOnSignInClick}>SignIn</Button>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Button component={Link} to="/signup">
-                        SignUp
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </form>
-          </Paper>
+          {matches ? (
+            <SignInLargePaper
+              username={user}
+              password={password}
+              onChangeUsername={handleOnChangeUsername}
+              onChangePassword={handleOnChangePassword}
+              onSignInClick={handleOnSignInClick}
+            />
+          ) : (
+            <SignInSmallPaper
+              username={user}
+              password={password}
+              onChangeUsername={handleOnChangeUsername}
+              onChangePassword={handleOnChangePassword}
+              onSignInClick={handleOnSignInClick}
+            />
+          )}
         </Grid>
       </Grid>
     </PageTemplate>
