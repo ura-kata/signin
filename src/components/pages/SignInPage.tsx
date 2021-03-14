@@ -67,9 +67,13 @@ export default function SignInPage() {
         console.log(accessToken);
         console.log(idToken);
         console.log(refreshToken);
+
+        // TODO Cookie に Token を設定しアプリケーションに遷移する
       },
       onFailure: (err) => {
         console.log(err);
+
+        // TODO エラーを表示する
       },
     });
   };
