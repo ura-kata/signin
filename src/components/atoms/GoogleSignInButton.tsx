@@ -6,6 +6,7 @@ import {
   Theme,
 } from '@material-ui/core';
 import NormalLogo from '../../img/btn_google_light_normal_ios.svg';
+import { getGoogleSignInUrl as createGoogleSignInUrl } from '../../util';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,8 +43,14 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function GoogleSignInButton() {
   const classes = useStyles();
+
+  const handleOnClick = () => {
+    const url = createGoogleSignInUrl();
+    window.location.href = url;
+  };
+
   return (
-    <ButtonBase className={classes.button}>
+    <ButtonBase className={classes.button} onClick={handleOnClick}>
       <span className={classes.imageSpan}>
         <img
           src={NormalLogo}
