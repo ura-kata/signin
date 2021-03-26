@@ -73,7 +73,13 @@ export default function SignInPage() {
       onFailure: (err) => {
         console.log(err);
 
-        // TODO エラーを表示する
+        if (err.code === 'UserNotConfirmedException') {
+          // User is not confirmed.
+        } else if (err.code === 'NotAuthorizedException') {
+          // Incorrect username or password.
+        } else {
+          // other error.
+        }
       },
     });
   };
