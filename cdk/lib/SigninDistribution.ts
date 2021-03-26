@@ -2,6 +2,8 @@ import {
   CloudFrontWebDistribution,
   OriginAccessIdentity,
   PriceClass,
+  SSLMethod,
+  SecurityPolicyProtocol,
 } from '@aws-cdk/aws-cloudfront';
 import { Construct } from '@aws-cdk/core';
 import { SigninBucke } from './SignInBucket';
@@ -11,7 +13,9 @@ export class SigninDistribution extends CloudFrontWebDistribution {
     scope: Construct,
     id: string,
     signinBucket: SigninBucke,
-    identity: OriginAccessIdentity
+    identity: OriginAccessIdentity,
+    fqdn: string,
+    acmCertificateArn: string
   ) {
     super(scope, id, {
       errorConfigurations: [
@@ -42,6 +46,14 @@ export class SigninDistribution extends CloudFrontWebDistribution {
         },
       ],
       priceClass: PriceClass.PRICE_CLASS_200,
+      viewerCertificate: {
+        aliases: [fqdn],
+        props: {
+          acmCertificateArn: acmCertificateArn,
+          minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
+          sslSupportMethod: SSLMethod.SNI,
+        },
+      },
     });
   }
 }
