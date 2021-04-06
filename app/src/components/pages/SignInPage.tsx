@@ -13,6 +13,7 @@ import {
   CognitoUserSession,
 } from 'amazon-cognito-identity-js';
 import { useState } from 'react';
+import { setTokenToCookie } from '../../util';
 import SignInLargePaper from '../molecules/SignInLargePaper';
 import SignInSmallPaper from '../molecules/SignInSmallPaper';
 import PageTemplate from '../templates/PageTemplate';
@@ -60,7 +61,7 @@ export default function SignInPage() {
 
     const cognitoUser = new CognitoUser(userData);
     cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: (result: CognitoUserSession) => {
+      onSuccess: async (result: CognitoUserSession) => {
         const accessToken = result.getAccessToken().getJwtToken();
         const idToken = result.getIdToken().getJwtToken();
         const refreshToken = result.getRefreshToken().getToken();
@@ -68,7 +69,16 @@ export default function SignInPage() {
         console.log(idToken);
         console.log(refreshToken);
 
-        // TODO Cookie に Token を設定しアプリケーションに遷移する
+        const setCookieSuccess = await setTokenToCookie({
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          idToken: idToken,
+        });
+        if (!setCookieSuccess) {
+          // TODO Token を Cookie に設定するのを失敗したことをエラーメッセージとして表示する
+          console.log('The token could not be set as a cookie.');
+          return;
+        }
       },
       onFailure: (err) => {
         console.log(err);

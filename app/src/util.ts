@@ -97,20 +97,22 @@ export async function getToken(
   }
 }
 
+export interface CookieToken {
+  accessToken: string;
+  refreshToken: string;
+  idToken: string;
+  expiresIn?: string;
+}
+
 /** Cookie に Token を設定する */
-export async function setTokenToCookie(token: Token): Promise<boolean> {
-  const url = process.env.SETTING_COOKIE_URI as string;
+export async function setTokenToCookie(token: CookieToken): Promise<boolean> {
+  const url = process.env.REACT_APP_SETTING_COOKIE_URI as string;
 
   const headers = {
     'Content-Type': 'application/json',
   };
 
-  const body = JSON.stringify({
-    accessToken: token.access_token,
-    refreshToken: token.refresh_token,
-    idToken: token.id_token,
-    expiresIn: token.expires_in,
-  });
+  const body = JSON.stringify(token);
 
   try {
     // https://stackoverflow.com/questions/42710057/fetch-cannot-set-cookies-received-from-the-server
