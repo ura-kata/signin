@@ -18,6 +18,8 @@ import SignInLargePaper from '../molecules/SignInLargePaper';
 import SignInSmallPaper from '../molecules/SignInSmallPaper';
 import PageTemplate from '../templates/PageTemplate';
 
+const appUrl = process.env.REACT_APP_APP_URL as string;
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -79,6 +81,13 @@ export default function SignInPage() {
           console.log('The token could not be set as a cookie.');
           return;
         }
+
+        if (!appUrl) {
+          console.log('The application URL cannot be found.');
+          return;
+        }
+        // アプリケーションに遷移する
+        window.location.href = appUrl;
       },
       onFailure: (err) => {
         console.log(err);
