@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router';
-import { getToken } from '../../util';
+import { getToken, setTokenToCookie } from '../../util';
 import PageTemplate from '../templates/PageTemplate';
+
+const REACT_APP_APP_URL = process.env.REACT_APP_APP_URL as string;
 
 interface Params {
   code: string;
@@ -48,12 +50,33 @@ export default function CallbackPage() {
     const f = async () => {
       const token = await getToken(params.code, params.state);
       if (!token) {
+        console.log('The token could not be get.');
         window.location.href = '/signin';
         return;
       }
-      console.log(token?.access_token);
 
-      // TODO Cookie に Token を設定しアプリケーションに遷移する
+      const accessToken = token.access_token;
+      const idToken = token.id_token;
+      const refreshToken = token.refresh_token;
+
+
+      const setCookieSuccess = await setTokenToCookie({
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        idToken: idToken,
+      });
+      if (!setCookieSuccess) {
+        // TODO Token を Cookie に設定するのを失敗したことをエラーメッセージとして表示する
+        console.log('The token could not be set as a cookie.');
+        return;
+      }
+
+      if (!REACT_APP_APP_URL) {
+        console.log('The application URL cannot be found.');
+        return;
+      }
+      // アプリケーションに遷移する
+      window.location.href = REACT_APP_APP_URL;
     };
     f();
   }, [location]);
